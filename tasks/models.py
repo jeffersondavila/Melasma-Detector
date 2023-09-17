@@ -13,3 +13,12 @@ class Task(models.Model):
 
   def __str__(self):
     return self.title + ' - ' + self.user.username
+
+class History(models.Model):
+    image_name = models.CharField(max_length=255)
+    created_date = models.DateTimeField(auto_now_add=True)
+    resultado = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.image_name + ' - ' + self.user.username

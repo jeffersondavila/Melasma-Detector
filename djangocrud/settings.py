@@ -80,21 +80,23 @@ WSGI_APPLICATION = 'djangocrud.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+IN_PRODUCTION = 'RENDER' in os.environ
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # Feel free to alter this value to suit your needs.
-        default='postgresql://postgres:postgres@localhost/postgres',
-        conn_max_age=600
-    )
-}
-
+# Configura la base de datos
+if IN_PRODUCTION:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgresql://postgres:postgres@localhost/postgres',
+            conn_max_age=600
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
