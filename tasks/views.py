@@ -1,4 +1,4 @@
-from .models import Task
+from .models import Task, History
 from django.utils import timezone
 from django.db import IntegrityError
 from django.contrib.auth.models import User
@@ -132,7 +132,14 @@ def upload_image(request):
 
             prediction = predict_face(model, img_array)
 
+            # Guardar la información en la tabla Analisis
+            analisis = History(user=request.user, image_name=request.FILES['image'].name, resultado=str(prediction))
+            analisis.save()
     else:
         form = ImageUploadForm()
 
     return render(request, 'analyze_image.html', {'form': form, 'prediction': prediction})
+
+def analisis_history(request):
+    history_list = History.objects.all().order_by('-created_date')
+    return render(request, 'history.html', {'history': history_list})

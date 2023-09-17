@@ -14,7 +14,7 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
             aria-expanded="false">Task</a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
             <li class="nav-item">
               <a href="{% url 'tasks' %}" class="nav-link">Tasks</a>
             </li>
@@ -34,6 +34,9 @@
         </li>
         <li class="nav-item">
           <a href="{% url 'analyze_image' %}" class="nav-link">Analyze Image</a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'history' %}" class="nav-link">History</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/logout">Logout</a>

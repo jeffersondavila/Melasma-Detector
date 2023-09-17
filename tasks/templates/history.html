@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="container">
+    <div class="row">
+        <h1>Historial de Análisis</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre de la Imagen</th>
+                    <th>Usuario</th>
+                    <th>Fecha de Creación</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analisis in history %}
+                <tr>
+                    <td>{{ analisis.image_name }}</td>
+                    <td>{{ analisis.user.username }}</td>
+                    <td>{{ analisis.created_date|date:"d-m-Y H:i" }}</td>
+                    <td>{{ analisis.resultado }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not history %}
+        <p>No hay registros en el historial de análisis.</p>
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}
