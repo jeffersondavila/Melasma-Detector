@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Task, History
+from .models import Paciente, HistorialClinico, Enfermedad, Analisis, History, Task
 
 # Register your models here.
 class TaskAdmin(admin.ModelAdmin):
@@ -7,3 +7,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 admin.site.register(Task, TaskAdmin)
 admin.site.register(History)
+admin.site.register(Paciente)
+admin.site.register(HistorialClinico)
+admin.site.register(Enfermedad)
+admin.site.register(Analisis)
