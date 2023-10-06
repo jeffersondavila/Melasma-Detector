@@ -32,6 +32,21 @@
             </li>
           </ul>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">Patient</a>
+          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
+            <li class="nav-item">
+              <a href="{% url 'patients' %}" class="nav-link">Patients</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'create_patient' %}" class="nav-link">Create Patient</a>
+            </li>
+          </ul>
+        </li>
         <li class="nav-item">
           <a href="{% url 'analyze_image' %}" class="nav-link">Analyze Image</a>
         </li>

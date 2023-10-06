@@ -1,0 +1,19 @@
+{% extends 'base.html' %} {% block content %}
+
+<main class="container">
+    <div class="row">
+        <div class="mt-2">
+            <form method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button class="btn btn-success">Update</button>
+            </form>
+            <form action="{% url 'delete_patient' patient.id %}" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-danger mt-2">Delete</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

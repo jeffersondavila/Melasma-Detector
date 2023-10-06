@@ -1,4 +1,4 @@
-from .models import Task
+from .models import Task, Paciente
 from django import forms
 from django.forms import ModelForm
 
@@ -14,3 +14,13 @@ class TaskForm(ModelForm):
 
 class ImageUploadForm(forms.Form):
     image = forms.ImageField()
+
+class PatientForm(ModelForm):
+    class Meta:
+        model = Paciente
+        fields = ['nombre', 'fecha_nacimiento', 'informacion_adicional']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del paciente'}),
+            'informacion_adicional': forms.Textarea(attrs={'class': 'form-control'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
