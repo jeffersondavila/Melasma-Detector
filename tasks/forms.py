@@ -1,6 +1,6 @@
-from .models import Task, Paciente, Enfermedad
 from django import forms
 from django.forms import ModelForm
+from .models import Task, Paciente, Enfermedad
 
 class TaskForm(ModelForm):
     class Meta:
@@ -13,6 +13,8 @@ class TaskForm(ModelForm):
         }
 
 class ImageUploadForm(forms.Form):
+    paciente = forms.ModelChoiceField(queryset=Paciente.objects.all(), required=False, label="Seleccionar un paciente")
+    enfermedad = forms.ModelChoiceField(queryset=Enfermedad.objects.all(), required=False, label="Seleccionar una enfermedad")
     image = forms.ImageField()
 
 class PatientForm(ModelForm):

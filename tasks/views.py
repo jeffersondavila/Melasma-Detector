@@ -1,12 +1,12 @@
-from .models import Task, History, Paciente, Enfermedad
 from django.utils import timezone
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-from .forms import TaskForm, ImageUploadForm, PatientForm, DiseaseForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
+from .forms import TaskForm, ImageUploadForm, PatientForm, DiseaseForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .models import Task, History, Paciente, Enfermedad, Analisis, HistorialClinico
 
 import os
 import numpy as np
@@ -201,8 +201,10 @@ def upload_image(request):
     if request.method == 'POST':
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
+            paciente_seleccionado = form.cleaned_data['paciente']
+            enfermedad_seleccionada = form.cleaned_data['enfermedad']
 
-            uploaded_image = request.FILES['image'].read()  # Esto te da los bytes de la imagen.
+            uploaded_image = request.FILES['image'].read()
             img_io = BytesIO(uploaded_image)
             img = image.load_img(img_io, target_size=(224, 224))
 
@@ -214,14 +216,21 @@ def upload_image(request):
 
             prediction = predict_face(model, img_array)
 
-            # Guardar la información en la tabla Analisis
-            analisis = History(user=request.user, image_name=request.FILES['image'].name, resultado=str(prediction))
-            analisis.save()
+            historial_clinico_paciente = HistorialClinico.objects.filter(paciente=paciente_seleccionado).order_by('-fecha_creacion').first()
+
+            if historial_clinico_paciente:  # Verificar si existe un historial clínico para el paciente
+                analisis = Analisis(
+                    historial_clinico=historial_clinico_paciente,
+                    enfermedad=enfermedad_seleccionada,
+                    nombre_imagen=request.FILES['image'].name,
+                    resultado=str(prediction)
+                )
+                analisis.save()
     else:
         form = ImageUploadForm()
 
     return render(request, 'analyze_image.html', {'form': form, 'prediction': prediction})
 
 def analisis_history(request):
-    history_list = History.objects.all().order_by('-created_date')
-    return render(request, 'history.html', {'history': history_list})
+    analisis_list = Analisis.objects.all().order_by('-fecha_creacion')
+    return render(request, 'history.html', {'analisis': analisis_list})

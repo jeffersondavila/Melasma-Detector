@@ -8,24 +8,28 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Nombre de la Imagen</th>
+                    <th>Historial Clínico</th>
                     <th>Usuario</th>
-                    <th>Fecha de Creación</th>
+                    <th>Enfermedad</th>
+                    <th>Nombre de la Imagen</th>
                     <th>Resultado</th>
+                    <th>Fecha de Creación</th>
                 </tr>
             </thead>
             <tbody>
-                {% for analisis in history %}
+                {% for analisis_record in analisis %}
                 <tr>
-                    <td>{{ analisis.image_name }}</td>
-                    <td>{{ analisis.user.username }}</td>
-                    <td>{{ analisis.created_date|date:"d-m-Y H:i" }}</td>
-                    <td>{{ analisis.resultado }}</td>
+                    <td>{{ analisis_record.historial_clinico.paciente.nombre }}</td>
+                    <td>{{ analisis_record.historial_clinico.usuario.username }}</td>
+                    <td>{{ analisis_record.enfermedad.nombre }}</td>
+                    <td>{{ analisis_record.nombre_imagen }}</td>
+                    <td>{{ analisis_record.resultado }}</td>
+                    <td>{{ analisis_record.fecha_creacion|date:"d-m-Y H:i" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% if not history %}
+        {% if not analisis %}
         <p>No hay registros en el historial de análisis.</p>
         {% endif %}
     </div>
