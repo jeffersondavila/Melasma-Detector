@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# Listo
 class Paciente(models.Model):
     nombre = models.CharField(max_length=255)
     fecha_nacimiento = models.DateTimeField()
@@ -22,6 +23,7 @@ class HistorialClinico(models.Model):
 class Enfermedad(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nombre
@@ -36,6 +38,7 @@ class Analisis(models.Model):
     def __str__(self):
         return f"{self.nombre_imagen} - {self.enfermedad}"
 
+# Listo
 class Task(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(max_length=1000)
@@ -47,6 +50,7 @@ class Task(models.Model):
     def __str__(self):
         return self.title + ' - ' + self.user.username
 
+# Listo
 class History(models.Model):
     image_name = models.CharField(max_length=255)
     created_date = models.DateTimeField(auto_now_add=True)

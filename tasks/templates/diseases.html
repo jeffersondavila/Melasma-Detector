@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+
+<main class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h1 class="text-center display-3 py-5">Diseases</h1>
+            <ul class="list-group">
+                {% for disease in diseases %}
+                <a class="list-group-item" href="{% url 'disease_detail' disease.id %}">
+                    <header class="d-flex justify-content-between">
+                        <h1 class="fw-bold">{{disease.nombre}}</h1>
+                    </header>
+                </a>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

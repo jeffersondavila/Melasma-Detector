@@ -1,8 +1,8 @@
-from .models import Task, History, Paciente
+from .models import Task, History, Paciente, Enfermedad
 from django.utils import timezone
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-from .forms import TaskForm, ImageUploadForm, PatientForm
+from .forms import TaskForm, ImageUploadForm, PatientForm, DiseaseForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
@@ -36,9 +36,15 @@ def tasks(request):
     tasks = Task.objects.filter(user=request.user, datecompleted__isnull=True)
     return render(request, 'tasks.html', {"tasks": tasks})
 
+@login_required
 def patients(request):
     patients = Paciente.objects.filter(user=request.user)
     return render(request, 'patients.html', {"patients": patients})
+
+@login_required
+def diseases(request):
+    diseases = Enfermedad.objects.filter(user=request.user)
+    return render(request, 'diseases.html', {"diseases": diseases})
 
 @login_required
 def tasks_completed(request):
@@ -72,6 +78,20 @@ def create_patient(request):
             return redirect('patients')
         except ValueError:
             return render(request, 'create_patient.html', {"form": PatientForm, "error": "Error creating patient."})
+
+@login_required
+def create_disease(request):
+    if request.method == "GET":
+        return render(request, 'create_disease.html', {"form": DiseaseForm})
+    else:
+        try:
+            form = DiseaseForm(request.POST)
+            new_disease = form.save(commit=False)
+            new_disease.user = request.user
+            new_disease.save()
+            return redirect('diseases')
+        except ValueError:
+            return render(request, 'create_disease.html', {"form": DiseaseForm, "error": "Error creating disease."})
 
 def home(request):
     return render(request, 'home.html')
@@ -123,6 +143,21 @@ def patient_detail(request, patient_id):
             return render(request, 'patient_detail.html', {'patient': patient, 'form': form, 'error': 'Error updating patient.'})
 
 @login_required
+def disease_detail(request, disease_id):
+    if request.method == 'GET':
+        disease = get_object_or_404(Enfermedad, pk=disease_id, user=request.user)
+        form = DiseaseForm(instance=disease)
+        return render(request, 'disease_detail.html', {'disease': disease, 'form': form})
+    else:
+        try:
+            disease = get_object_or_404(Paciente, pk=disease_id, user=request.user)
+            form = DiseaseForm(request.POST, instance=disease)
+            form.save()
+            return redirect('diseases')
+        except ValueError:
+            return render(request, 'disease_detail.html', {'disease': disease, 'form': form, 'error': 'Error updating disease.'})
+
+@login_required
 def complete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
@@ -143,6 +178,13 @@ def delete_patient(request, patient_id):
     if request.method == 'POST':
         patient.delete()
         return redirect('patients')
+
+@login_required
+def delete_disease(request, disease_id):
+    disease = get_object_or_404(Enfermedad, pk=disease_id, user=request.user)
+    if request.method == 'POST':
+        disease.delete()
+        return redirect('diseases')
 
 def load_and_prepare_image(img, target_size=(224, 224)):
     img_array = image.img_to_array(img)

@@ -37,6 +37,12 @@
             aria-expanded="false">Patient</a>
           <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
             <li class="nav-item">
+              <a href="{% url 'diseases' %}" class="nav-link">Diseases</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="nav-item">
               <a href="{% url 'patients' %}" class="nav-link">Patients</a>
             </li>
             <li>
@@ -44,6 +50,12 @@
             </li>
             <li class="nav-item">
               <a href="{% url 'create_patient' %}" class="nav-link">Create Patient</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'create_disease' %}" class="nav-link">Create Disease</a>
             </li>
           </ul>
         </li>
