@@ -6,7 +6,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import TaskForm, ImageUploadForm, PatientForm, DiseaseForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Task, History, Paciente, Enfermedad, Analisis, HistorialClinico
+from .models import Task, Paciente, Enfermedad, Analisis, HistorialClinico
 
 import os
 import numpy as np
@@ -14,6 +14,21 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from keras.models import load_model
 from keras.preprocessing import image
+
+def home(request):
+    return render(request, 'home.html')
+
+# LOG INFORMATION
+def signin(request):
+    if request.method == 'GET':
+        return render(request, 'signin.html', {"form": AuthenticationForm})
+    else:
+        user = authenticate(
+            request, username=request.POST['username'], password=request.POST['password'])
+        if user is None:
+            return render(request, 'signin.html', {"form": AuthenticationForm, "error": "Username or password is incorrect."})
+        login(request, user)
+        return redirect('tasks')
 
 def signup(request):
     if request.method == 'GET':
@@ -31,6 +46,12 @@ def signup(request):
 
         return render(request, 'signup.html', {"form": UserCreationForm, "error": "Passwords did not match."})
 
+@login_required
+def signout(request):
+    logout(request)
+    return redirect('home')
+
+# SHOW INFORMATION
 @login_required
 def tasks(request):
     tasks = Task.objects.filter(user=request.user, datecompleted__isnull=True)
@@ -51,6 +72,12 @@ def tasks_completed(request):
     tasks = Task.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
     return render(request, 'tasks.html', {"tasks": tasks})
 
+@login_required
+def analisis_history(request):
+    analisis_list = Analisis.objects.all().order_by('-fecha_creacion')
+    return render(request, 'history.html', {'analisis': analisis_list})
+
+# CREATE/UPDATE INFORMATION
 @login_required
 def create_task(request):
     if request.method == "GET":
@@ -93,25 +120,15 @@ def create_disease(request):
         except ValueError:
             return render(request, 'create_disease.html', {"form": DiseaseForm, "error": "Error creating disease."})
 
-def home(request):
-    return render(request, 'home.html')
-
 @login_required
-def signout(request):
-    logout(request)
-    return redirect('home')
-
-def signin(request):
-    if request.method == 'GET':
-        return render(request, 'signin.html', {"form": AuthenticationForm})
-    else:
-        user = authenticate(
-            request, username=request.POST['username'], password=request.POST['password'])
-        if user is None:
-            return render(request, 'signin.html', {"form": AuthenticationForm, "error": "Username or password is incorrect."})
-        login(request, user)
+def complete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.datecompleted = timezone.now()
+        task.save()
         return redirect('tasks')
 
+# DETAIL INFORMATION
 @login_required
 def task_detail(request, task_id):
     if request.method == 'GET':
@@ -157,14 +174,7 @@ def disease_detail(request, disease_id):
         except ValueError:
             return render(request, 'disease_detail.html', {'disease': disease, 'form': form, 'error': 'Error updating disease.'})
 
-@login_required
-def complete_task(request, task_id):
-    task = get_object_or_404(Task, pk=task_id, user=request.user)
-    if request.method == 'POST':
-        task.datecompleted = timezone.now()
-        task.save()
-        return redirect('tasks')
-
+# DELETE INFORMATION
 @login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
@@ -186,16 +196,20 @@ def delete_disease(request, disease_id):
         disease.delete()
         return redirect('diseases')
 
+# ANALYTICAL LOAD
+@login_required
 def load_and_prepare_image(img, target_size=(224, 224)):
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.
     return img_array
 
+@login_required
 def predict_face(model, img_array):
     predictions = model.predict(img_array)
     return "La imagen no contiene melasma" if predictions[0][0] > 0.5 else "La imagen contiene melasma"
 
+@login_required
 def upload_image(request):
     prediction = None
     if request.method == 'POST':
@@ -230,7 +244,3 @@ def upload_image(request):
         form = ImageUploadForm()
 
     return render(request, 'analyze_image.html', {'form': form, 'prediction': prediction})
-
-def analisis_history(request):
-    analisis_list = Analisis.objects.all().order_by('-fecha_creacion')
-    return render(request, 'history.html', {'analisis': analisis_list})
