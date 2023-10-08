@@ -238,19 +238,16 @@ def delete_medical(request, medical_id):
         return redirect('medicals')
 
 # ANALYTICAL LOAD
-@login_required
 def load_and_prepare_image(img, target_size=(224, 224)):
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.
     return img_array
 
-@login_required
 def predict_face(model, img_array):
     predictions = model.predict(img_array)
     return "La imagen no contiene melasma" if predictions[0][0] > 0.5 else "La imagen contiene melasma"
 
-@login_required
 def upload_image(request):
     prediction = None
     if request.method == 'POST':
