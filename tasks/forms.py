@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Task, Paciente, Enfermedad
+from .models import Task, Paciente, Enfermedad, HistorialClinico
 
 class TaskForm(ModelForm):
     class Meta:
@@ -34,4 +34,13 @@ class DiseaseForm(ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la enfermedad'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+
+class MedicalForm(ModelForm):
+    class Meta:
+        model = HistorialClinico
+        fields = ['paciente', 'notas']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la enfermedad'}),
+            'notas': forms.Textarea(attrs={'class': 'form-control'}),
         }

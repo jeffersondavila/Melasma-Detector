@@ -12,12 +12,12 @@ class Paciente(models.Model):
 
 class HistorialClinico(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     notas = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.paciente} - {self.usuario}"
+        return f"{self.paciente} - {self.user}"
 
 class Enfermedad(models.Model):
     nombre = models.CharField(max_length=255)

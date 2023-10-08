@@ -26,6 +26,7 @@ urlpatterns = [
     path('tasks/', views.tasks, name='tasks'),
     path('patients/', views.patients, name='patients'),
     path('diseases/', views.diseases, name='diseases'),
+    path('medicals/', views.medicals, name='medicals'),
 
     path('tasks_completed/', views.tasks_completed, name='tasks_completed'),
     path('logout/', views.signout, name='logout'),
@@ -34,16 +35,19 @@ urlpatterns = [
     path('create_task/', views.create_task, name='create_task'),
     path('create_patient/', views.create_patient, name='create_patient'),
     path('create_disease/', views.create_disease, name='create_disease'),
+    path('create_medical/', views.create_medical, name='create_medical'),
 
     path('tasks/<int:task_id>', views.task_detail, name='task_detail'),
     path('patients/<int:patient_id>', views.patient_detail, name='patient_detail'),
     path('diseases/<int:disease_id>', views.disease_detail, name='disease_detail'),
+    path('medicals/<int:medical_id>', views.medical_detail, name='medical_detail'),
 
     path('taks/<int:task_id>/complete', views.complete_task, name='complete_task'),
 
     path('tasks/<int:task_id>/delete', views.delete_task, name='delete_task'),
     path('patients/<int:patient_id>/delete', views.delete_patient, name='delete_patient'),
     path('diseases/<int:disease_id>/delete', views.delete_disease, name='delete_disease'),
+    path('medicals/<int:medical_id>/delete', views.delete_medical, name='delete_medical'),
 
     path('analyze_image/', views.upload_image, name='analyze_image'),
     path('history/', views.analisis_history, name='history'),

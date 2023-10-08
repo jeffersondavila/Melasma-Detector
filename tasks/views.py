@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import TaskForm, ImageUploadForm, PatientForm, DiseaseForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Task, Paciente, Enfermedad, Analisis, HistorialClinico
+from .forms import TaskForm, ImageUploadForm, PatientForm, DiseaseForm, MedicalForm
 
 import os
 import numpy as np
@@ -68,6 +68,11 @@ def diseases(request):
     return render(request, 'diseases.html', {"diseases": diseases})
 
 @login_required
+def medicals(request):
+    medicals = HistorialClinico.objects.filter(user=request.user)
+    return render(request, 'medicals.html', {"medicals": medicals})
+
+@login_required
 def tasks_completed(request):
     tasks = Task.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
     return render(request, 'tasks.html', {"tasks": tasks})
@@ -121,6 +126,20 @@ def create_disease(request):
             return render(request, 'create_disease.html', {"form": DiseaseForm, "error": "Error creating disease."})
 
 @login_required
+def create_medical(request):
+    if request.method == "GET":
+        return render(request, 'create_medical.html', {"form": MedicalForm})
+    else:
+        try:
+            form = MedicalForm(request.POST)
+            new_medical = form.save(commit=False)
+            new_medical.user = request.user
+            new_medical.save()
+            return redirect('medicals')
+        except ValueError:
+            return render(request, 'create_medical.html', {"form": MedicalForm, "error": "Error creating medical history."})
+
+@login_required
 def complete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
@@ -167,12 +186,27 @@ def disease_detail(request, disease_id):
         return render(request, 'disease_detail.html', {'disease': disease, 'form': form})
     else:
         try:
-            disease = get_object_or_404(Paciente, pk=disease_id, user=request.user)
+            disease = get_object_or_404(Enfermedad, pk=disease_id, user=request.user)
             form = DiseaseForm(request.POST, instance=disease)
             form.save()
             return redirect('diseases')
         except ValueError:
             return render(request, 'disease_detail.html', {'disease': disease, 'form': form, 'error': 'Error updating disease.'})
+
+@login_required
+def medical_detail(request, medical_id):
+    if request.method == 'GET':
+        medical = get_object_or_404(HistorialClinico, pk=medical_id, user=request.user)
+        form = MedicalForm(instance=medical)
+        return render(request, 'medical_detail.html', {'medical': medical, 'form': form})
+    else:
+        try:
+            medical = get_object_or_404(HistorialClinico, pk=medical_id, user=request.user)
+            form = MedicalForm(request.POST, instance=medical)
+            form.save()
+            return redirect('medicals')
+        except ValueError:
+            return render(request, 'medical_detail.html', {'medical': medical, 'form': form, 'error': 'Error updating medical history.'})
 
 # DELETE INFORMATION
 @login_required
@@ -195,6 +229,13 @@ def delete_disease(request, disease_id):
     if request.method == 'POST':
         disease.delete()
         return redirect('diseases')
+
+@login_required
+def delete_medical(request, medical_id):
+    medical = get_object_or_404(HistorialClinico, pk=medical_id, user=request.user)
+    if request.method == 'POST':
+        medical.delete()
+        return redirect('medicals')
 
 # ANALYTICAL LOAD
 @login_required
